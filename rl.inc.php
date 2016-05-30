@@ -31,10 +31,14 @@ function sanitizeInputs()
  * Gestion de la BDD un peu protégée.
  */
 include 'modSQL/PdoLogged.class.php';
-// index.php 
-// -> include '../conf/local.protected.php' 
-// -> forum/include/dblayer/common_db.php
-// $db = new DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect);
+/*
+  // À la recherche des identifiants
+    index.php 
+   -> include '../conf/local.protected.php' 
+   -> forum/include/dblayer/common_db.php
+    $db = new DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect);
+ * 
+ */
 $db_type = 'mysqli';
 include '../conf/local.protected.php';
 
@@ -52,5 +56,4 @@ if (!$oBDD) {
 require_once 'htmlpurifier/HTMLPurifier.auto.php';
 $config = HTMLPurifier_Config::createDefault();
 $oPurifier = new HTMLPurifier($config);
-
-//$clean_html = $purifier->purify($dirty_html);
+//$clean_html = $oPurifier->purify($dirty_html);
