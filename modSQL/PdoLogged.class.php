@@ -16,7 +16,6 @@
  * @see        NetOther, Net_Sample::Net_Sample(
  * @since      File available since Release 1.2.0
  * @deprecated File deprecated in Release 2.0.0
- *
  */
 /*
  * Fichier qui définit une classe qui étend PDO pour ajouter
@@ -42,8 +41,7 @@ require_once $sPwd . '/PdoArnaud.class.php';
  * @version  Release: SVN: $Id$
  * @link     https://localhost/WebDevTests
  */
-class PdoLogged extends PdoArnaud
-{
+class PdoLogged extends PdoArnaud {
     /**
      * PDO Object
      */
@@ -55,7 +53,7 @@ class PdoLogged extends PdoArnaud
     protected $pdoStmt;
 
     /**
-     * log Object
+     * Log Object
      */
     protected $pdoLogHandler;
     protected $pdoLogId;
@@ -72,13 +70,12 @@ class PdoLogged extends PdoArnaud
      *
      * @return PDOlogged Object
      */
-    function __construct($mDSN, $sUsername, $sPassword, $sLogFile,
-                         $aOptions = null, $sCharset = "utf-8"
+    function __construct($mDSN, $sUsername, $sPassword, $sLogFile, $aOptions = null, $sCharset = "utf-8"
     ) {
         try {
             if (!$sLogFile) {
                 throw new Exception(
-                    __CLASS__ . "log file is not set"
+                __CLASS__ . "log file is not set"
                 );
             }
             $this->pdoInitLog($sLogFile);
@@ -103,24 +100,22 @@ class PdoLogged extends PdoArnaud
     }
 
     /**
-     * destructeur
+     * Destructeur
      *
      * @return none
      */
-    function __destruct()
-    {
+    function __destruct() {
         fclose($this->pdoLogHandler);
     }
 
     /**
-     * setDebug : active debug
+     * Fonction setDebug : active debug
      *
      * @param boolean $bDebug flag
      *
      * @return none
      */
-    public function setDebug($bDebug = true)
-    {
+    public function setDebug($bDebug = true) {
         $this->setAttribute(
                 PDO::ATTR_EMULATE_PREPARES, $bDebug == true ? false : true
         );
@@ -128,31 +123,28 @@ class PdoLogged extends PdoArnaud
     }
 
     /**
-     * setLogLevel
+     * Méthode setLogLevel
      *
      * @param int $iLevel 0: all, 1: error
      *
      * @return none
      */
-    function setLogLevel($iLevel = 1)
-    {
+    function setLogLevel($iLevel = 1) {
         $this->_iLogLevel = $iLevel;
     }
 
     /**
-     * pdoInitLog
+     * Méthode pdoInitLog
      *
      * @param string $sLogFile le nom du fichier de log
      *
      * @return none
-     *
      */
-    protected function pdoInitLog($sLogFile)
-    {
+    protected function pdoInitLog($sLogFile) {
         $this->pdoLogId = sprintf("%04d", rand(1, 9999));
         if (!file_exists($sLogFile)) {
             throw new Exception(
-                __CLASS__ . " : logfile '$sLogFile' does not exists\n"
+            __CLASS__ . " : logfile '$sLogFile' does not exists\n"
             );
         }
         if (!is_writable($sLogFile)) {
@@ -174,8 +166,7 @@ class PdoLogged extends PdoArnaud
      *
      * @return none
      */
-    public function log($sMsg)
-    {
+    public function log($sMsg) {
         $sDate = date('Y-m-d H:i:s');
         $sBuffer = $sDate . " " . $this->pdoLogId . " : " . $sMsg . "\n";
         fwrite($this->pdoLogHandler, $sBuffer);
@@ -183,7 +174,7 @@ class PdoLogged extends PdoArnaud
     }
 
     /**
-     * run : exécute la requête
+     * Méthode run : exécute la requête
      *
      * @param string  $sSQL    le message à logger
      * @param array   $aParams tableau de paramètres/arguments
@@ -192,8 +183,7 @@ class PdoLogged extends PdoArnaud
      *
      * @return array les lignes résultats
      */
-    function run($sSQL, $aParams = null, $bDoGet = true,
-        $iDebug = SQL_DEBUG_NONE
+    function run($sSQL, $aParams = null, $bDoGet = true, $iDebug = SQL_DEBUG_NONE
     ) {
         try {
             $aRows = null;
@@ -217,9 +207,9 @@ class PdoLogged extends PdoArnaud
                 }
                 $sParams = serialize($aParams);
                 $sJSql = json_encode($sSQL);
-                $this->log(__CLASS__."::run() $sJSql + $sParams => count($iCount)");
-                $this->log(__CLASS__."::run() debugDumpParams: $sPdoDbg");
-                $this->log(__CLASS__."::run() $sSQL");
+                $this->log(__CLASS__ . "::run() $sJSql + $sParams => count($iCount)");
+                $this->log(__CLASS__ . "::run() debugDumpParams: $sPdoDbg");
+                $this->log(__CLASS__ . "::run() $sSQL");
 
                 if ($iDebug >= SQL_DEBUG_RESULTS) {
                     $this->log("aResults=" . json_encode($aRows));
@@ -237,7 +227,7 @@ class PdoLogged extends PdoArnaud
     }
 
     /**
-     * execGet : exécute la requête et récupère le résultat
+     * Méthode execGet : exécute la requête et récupère le résultat
      *
      * @param string $sSQL    le SQL à exécuter
      * @param array  $aParams tableau de paramètres/arguments
@@ -245,13 +235,12 @@ class PdoLogged extends PdoArnaud
      *
      * @return array les lignes résultats
      */
-    function execGet($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE)
-    {
+    function execGet($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE) {
         return $this->run($sSQL, $aParams, true, $iDebug);
     }
 
     /**
-     * execRead : exécute la requête et récupère le résultat
+     * Méthode  execRead : exécute la requête et récupère le résultat
      *   alias de execGet
      *
      * @param string $sSQL    le SQL à exécuter
@@ -260,14 +249,13 @@ class PdoLogged extends PdoArnaud
      *
      * @return array les lignes résultats
      */
-    function execRead($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE)
-    {
+    function execRead($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE) {
         return $this->execGet($sSQL, $aParams, $iDebug);
     }
 
     /**
-     * execPush : exécute la requête et récupère le résultat, sert en écriture
-     *   dans la BDD (impact sur le num_rows/rowCount
+     * Méthode execPush : exécute la requête et récupère le résultat, sert en
+     *   écriture dans la BDD (impact sur le num_rows/rowCount
      *
      * @param string $sSQL    le SQL à jouer
      * @param array  $aParams tableau de paramètres/arguments
@@ -275,8 +263,7 @@ class PdoLogged extends PdoArnaud
      *
      * @return int nombre de lignes altérées
      */
-    function execPush($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE)
-    {
+    function execPush($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE) {
         $this->run($sSQL, $aParams, false, $iDebug);
         $iCount = $this->pdoStmt->rowCount();
         if ($iDebug > SQL_DEBUG_NONE) {
@@ -286,7 +273,7 @@ class PdoLogged extends PdoArnaud
     }
 
     /**
-     * execWrite : exécute la requête et récupère le résultat
+     * Méthode  execWrite : exécute la requête et récupère le résultat
      *   alias pour execPush
      *
      * @param string $sSQL    le SQL à jouer
@@ -295,13 +282,12 @@ class PdoLogged extends PdoArnaud
      *
      * @return array les lignes résultats
      */
-    function execWrite($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE)
-    {
+    function execWrite($sSQL, $aParams = null, $iDebug = SQL_DEBUG_NONE) {
         return $this->execPush($sSQL, $aParams, $iDebug);
     }
 
     /**
-     * runNamed : exécute la requête
+     * Méthode runNamed : exécute la requête
      *
      * @param string $sSQL    le message à logger
      * @param array  $aParams tableau de paramètres/arguments
@@ -309,8 +295,7 @@ class PdoLogged extends PdoArnaud
      *
      * @return none
      */
-    function runNamed($sSQL, $aParams, $iDebug = SQL_DEBUG_NONE)
-    {
+    function runNamed($sSQL, $aParams, $iDebug = SQL_DEBUG_NONE) {
         try {
             $this->pdoStmt = $this->prepare($sSQL);
 
@@ -318,14 +303,14 @@ class PdoLogged extends PdoArnaud
                 list ($sKey, $sVar, $iType) = $aTriplet;
                 //echo html_p("[sKey=$sKey][sVar=$sVar][iType=$iType]");
                 //if (! $this->pdoStmt->bindParam($sKey, $sVar, $iType)) {
-                if (! $this->pdoStmt->bindValue($sKey, $sVar, $iType)) {
+                if (!$this->pdoStmt->bindValue($sKey, $sVar, $iType)) {
                     throw new PDOException(
-                        __FILE__ . " bindParam($sKey, $sVar, $iType) failed"
+                    __FILE__ . " bindParam($sKey, $sVar, $iType) failed"
                     );
                 }
             }
 
-            if (! $this->pdoStmt->execute()) {
+            if (!$this->pdoStmt->execute()) {
                 throw new PDOException("execute($sSQL) failed");
             }
 
@@ -338,7 +323,7 @@ class PdoLogged extends PdoArnaud
                 $this->log("@@@ [sql=$sJSql][sParams=$sParams] => count($iCount)");
                 $this->log("@@@ [sql=$sSQL] => count($iCount)");
                 $this->log("@@@ [PDO::debudDumpParams()=$sPdoDbg]");
-                $this->log("@@@ [aParams=".var_export($aParams, true)."]");
+                $this->log("@@@ [aParams=" . var_export($aParams, true) . "]");
 
                 if ($iDebug >= SQL_DEBUG_RESULTS) {
                     $this->log("@@@ json(aResults)=" . json_encode($aRows));
@@ -361,8 +346,7 @@ class PdoLogged extends PdoArnaud
      *
      * @return string
      */
-    function debugDumpParams()
-    {
+    function debugDumpParams() {
         ob_start();
         $this->pdoStmt->debugDumpParams();
         $sPdoDbg = ob_get_contents();
