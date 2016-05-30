@@ -19,6 +19,15 @@
 
 
 /**
+ * Nettoie $_GET et $_POST pour coller au script existant
+ */
+function sanitizeInputs()
+{
+    
+}
+
+
+/**
  * Gestion de la BDD un peu protégée.
  */
 include 'modSQL/PdoLogged.class.php';
