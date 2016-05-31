@@ -132,7 +132,7 @@ try {
                         <div class="page group">
                             <h1>Mesures du poids du matériel de randonnée</h1>
                             <?php
-                            include 'poids2.php';
+                            include 'poids.php';
                             ?>
                         </div>
                     </div>
