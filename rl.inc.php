@@ -25,8 +25,7 @@
  *
  * @return none
  */
-function sanitizeAllInputs()
-{
+function sanitizeAllInputs() {
     global $oHtmlPurifier;
 
     if (count($_GET)) {
@@ -42,6 +41,25 @@ function sanitizeAllInputs()
 }
 
 /**
+ * Dit si l'utilisateur loggé est dans le groupe admin (code source et non vrai
+ *  groupe) 
+ * @global type $pun_user
+ * @global type $aAdminPoids
+ * @return boolean
+ */
+function isAdminPoids() {
+    global $pun_user;
+    global $aAdminPoids;
+
+    foreach ($aAdminPoids as $u) {
+            if (pun_htmlspecialchars($pun_user['username']) != $u ) {
+                return true;
+            }
+    }
+    return false;   
+}
+
+/**
  * Lance une requête de lecture. Sert juste à na pas s'éloigne de ce qu'il y
  * avait avant et à masque la partie objet.
  *
@@ -52,8 +70,7 @@ function sanitizeAllInputs()
  *
  * @global object $oBDD le connecteur
  */
-function sqlRead($sRequete, $aParams=null)
-{
+function sqlRead($sRequete, $aParams = null) {
     global $oBDD;
 
     $mData = $oBDD->execRead($sRequete, $aParams, SQL_DEBUG_RESULTS);
@@ -70,8 +87,7 @@ function sqlRead($sRequete, $aParams=null)
  *
  * @global object $oBDD
  */
-function sqlWrite($sRequete, $aParams=null)
-{
+function sqlWrite($sRequete, $aParams = null) {
     global $oBDD;
 
     $iNbLines = $oBDD->execWrite($sRequete, $aParams, SQL_DEBUG_ERROR);
@@ -106,7 +122,6 @@ if (!$oBDD) {
 /**
  * Gestion anti-XSS
  */
-
 require_once 'htmlpurifier/library/HTMLPurifier.auto.php';
 $config = HTMLPurifier_Config::createDefault();
 $oHtmlPurifier = new HTMLPurifier($config);
