@@ -5,13 +5,14 @@
  * 
  *  * PHP version 5
  *
- * @category   PDOTests
- * @package    PDOLib
- * @author     Fabrice Mendes <0xfab@free.fr>
- * @copyright  1997-2005 The PHP Group
- * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
+ * @category   RLPoids
+ * @package    RLPoids
+ * @author     Fabrice Mendes <fab@antaya.fr>
+ * @author     Thierry Vezin <contact@randonner-leger.org>
+ * @copyright  2016 randonner-leger.org
+ * @license    https://creativecommons.org/licenses/by-nc-sa/4.0/ CC-by-nc-sa
  * @version    SVN: $Id:$
- * @link       http://pear.php.net/package/PackageName
+ * @link       None
  * @see        NetOther, Net_Sample::Net_Sample(
  * @since      File available since Release 1.2.0
  * @deprecated File deprecated in Release 2.0.0
@@ -20,27 +21,44 @@
 
 /**
  * Nettoie $_GET et $_POST pour coller au script existant
+ *
+ * @global object $oHtmlPurifier Instance antiXss
+ *
+ * @return none
  */
-function sanitizeInputs()
+function sanitizeAllInputs()
 {
+    global $oHtmlPurifier;
     
+    if (count($_GET)) {
+        foreach ($_GET as $sKey => $mValue) {
+            $_GET[$sKey] = $oHtmlPurifier->purify($mValue);
+        }
+    }
+    if (count($_POST)) {
+        foreach ($_POST as $sKey => $mValue) {
+            $_POST[$sKey] = $oHtmlPurifier->purify($mValue);
+        }
+    }
 }
 
 
 /**
  * Gestion de la BDD un peu protégée.
  */
-include 'modSQL/PdoLogged.class.php';
+require 'modSQL/PdoLogged.class.php';
 /*
   // À la recherche des identifiants
     index.php 
    -> include '../conf/local.protected.php' 
    -> forum/include/dblayer/common_db.php
-    $db = new DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect);
+   $db = new DBLayer(
+       $db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect
+   );
  * 
  */
 $db_type = 'mysqli';
-include '../conf/local.protected.php';
+require '../conf/local.protected.php';
 
 $sLogFile = 'poids.log';
 $sDSN = 'mysql:dbname=' . $db_name . ';host=' . $db_host;
@@ -55,5 +73,5 @@ if (!$oBDD) {
  */
 require_once 'htmlpurifier/HTMLPurifier.auto.php';
 $config = HTMLPurifier_Config::createDefault();
-$oPurifier = new HTMLPurifier($config);
-//$clean_html = $oPurifier->purify($dirty_html);
+$oHtmlPurifier = new HTMLPurifier($config);
+//$clean_html = $oHtmlPurifier->purify($dirty_html);

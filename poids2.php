@@ -1,18 +1,16 @@
 <?php
-
 // <? plus de short tags
-//nettoyage des signes dangereux
 
-$motif = '`[][<>{}!\$?\*\|\"\^=/:\`;&#%]`';
+require 'rl.inc.php';
 
-foreach ($_POST as $key => $value) {
-    $_POST[$key] = preg_replace($motif, "", $value);
-    $_POST[$key] = addslashes($value);
-}
-
-//Liste des poids des Produits
-
-if ($_POST['index'] == "liste" | $_GET['index'] == "liste") {
+/**
+ * Function liste
+ * Affichage
+ *
+ * @return None
+ */
+function mainListe()
+{
     if (isset($_GET['class'])) {
         $_POST['class'] = $_GET['class'];
     }
@@ -116,7 +114,7 @@ if ($_POST['index'] == "liste" | $_GET['index'] == "liste") {
 			<a href="index.php?index=liste&class=marque&categories=Toutes&marques=Toutes&utilisateur=' . $row["utilisateur"] . '">
 			' . $row["utilisateur"] . '</td>
 		<td class="">' .
-                str_replace(chr(13), "<br />", $row["rq"]) . '</td>
+        str_replace(chr(13), "<br />", $row["rq"]) . '</td>
 		<td style="text-align:center;">
 			<a href="index.php?index=modif&ligne=' . $row["num"] . '"><img border="0" src="button_edit.png"></a>
 			</td>
@@ -130,10 +128,17 @@ if ($_POST['index'] == "liste" | $_GET['index'] == "liste") {
     mysql_free_result($result);
 
     echo $html;
+    
 }
 
-//Ajout de poids de Produit
-elseif ($_POST['index'] == "ajout") {
+/**
+ * Ajout de poids de Produit
+ * Affichage
+ *
+ * @return None
+ */
+function mainAjout()
+{
     if (pun_htmlspecialchars($pun_user['username']) == "Guest") {
         echo '
 		<h2>Ajout d\'un produit</h2>
@@ -144,10 +149,11 @@ elseif ($_POST['index'] == "ajout") {
 		<a href="index.php">Retour</a>';
     } else {
         $html = '<h2>Ajout d\'un produit</h2>
-		<p>Les informations suivantes ont été ajoutées à la base de données :</p>';
-
+		<p>Les informations suivantes ont été ajoutées à la base de données :</p>
+';
+        
         // cas de la virgule
-
+        
         if (ereg(',', $_POST['poids'])) {
             $_POST['poids'] = str_replace(",", ".", $_POST['poids']);
         }
@@ -159,9 +165,9 @@ elseif ($_POST['index'] == "ajout") {
 
         //=====Création du header de l'e-mail.
         $headers = 'From: postmaster@randonner-leger.org' . "\r\n" .
-                'Reply-To: postmaster@randonner-leger.org' . "\r\n" .
-                'Content-Type: text/html; charset="utf-8"' . "\r\n" .
-                'X-Mailer: PHP/' . phpversion();
+                 'Reply-To: postmaster@randonner-leger.org' . "\r\n" .
+                 'Content-Type: text/html; charset="utf-8"' . "\r\n" .
+                 'X-Mailer: PHP/' . phpversion();
 
         //=====Ajout du message au format HTML
         $message .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body>' . "\r\n";
@@ -208,79 +214,89 @@ elseif ($_POST['index'] == "ajout") {
 	<a href="index.php">Retour</a>';
 
         echo $html;
-    }
+    }    
 }
 
-//Ajout de catégorie ou de marque des poids des Produit
-elseif ($_POST['index'] == "ajcatmrk") {
-
+/**
+ * Function liste
+ * Affichage
+ *
+ * @return None
+ */
+function mainAjCatMrk()
+{
+    //Ajout de catégorie ou de marque des poids des Produit
     $html = '
 	<h2>Ajout d\'une catégorie ou d\'une marque</h2>
 	<p>';
 
-    //nouvelle categorie
+          //nouvelle categorie
 
-    if ($_POST['newcat'] != "") {
-        $_POST['newcat'] = ucfirst($_POST['newcat']);
+          if ($_POST['newcat'] != "") {
+              $_POST['newcat'] = ucfirst($_POST['newcat']);
 
-        $req = "
+              $req = "
 	SELECT 'NomCat'
 	FROM `poids_categories`
 	WHERE 1
 	AND `Nomcat` LIKE '" . $_POST['newcat'] . "'";
 
-        $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
+              $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
 
-        if (mysql_num_rows($result) == 0) {
-            $req = "
+              if (mysql_num_rows($result) == 0) {
+                  $req = "
 	INSERT INTO `poids_categories` ( `NumCat` , `NomCat` )
 	VALUES (
 	NULL , '" . $_POST['newcat'] . "'
 	)";
-            $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
+                  $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
 
-            $html.='La catégorie ' . $_POST['newcat'] . ' a été ajouée à la liste.<br /><br />';
-        } else {
-            $html.='La categorie ' . $_POST['newcat'] . ' existe déja<br /><br />';
-        }
-    }
+                  $html.='La catégorie ' . $_POST['newcat'] . ' a été ajouée à la liste.<br /><br />';
+              } else {
+                  $html.='La categorie ' . $_POST['newcat'] . ' existe déja<br /><br />';
+              }
+          }
 
-    //nouvelle marque
-    elseif ($_POST['newmarq'] != "") {
-        $_POST['newmarq'] = ucfirst($_POST['newmarq']);
+          //nouvelle marque
+          elseif ($_POST['newmarq'] != "") {
+              $_POST['newmarq'] = ucfirst($_POST['newmarq']);
 
-        $req = "
+              $req = "
 	SELECT 'Nommarq'
 	FROM `poids_marques`
 	WHERE 1
 	AND `Nommarq` LIKE '" . $_POST['newmarq'] . "'";
 
-        $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
+              $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
 
-        if (mysql_num_rows($result) == 0) {
-            $req = "
+              if (mysql_num_rows($result) == 0) {
+                  $req = "
 	INSERT INTO `poids_marques` ( `Nummarq` , `Nommarq` )
 	VALUES (
 	NULL , '" . $_POST['newmarq'] . "'
 	)";
-            $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
+                  $result = mysql_query($req) or die('Erreur SQL req1!<br />' . mysql_error());
 
 
-            $html.='La marque ' . $_POST['newmarq'] . ' a été ajouée à la liste.<br />';
-        } else {
-            $html.='La marque ' . $_POST['newmarq'] . ' existe déja';
-        }
-    }
-    $html.='
+                  $html.='La marque ' . $_POST['newmarq'] . ' a été ajouée à la liste.<br />';
+              } else {
+                  $html.='La marque ' . $_POST['newmarq'] . ' existe déja';
+              }
+          }
+          $html.='
 	</p>
 	<a href="index.php">Retour</a>';
 
-    echo $html;
+               echo $html;    
 }
-
-//modification d'une donnée
-elseif ($_GET['index'] == "modif") {
-
+/**
+ * Modification d'une donnée
+ * Affichage
+ *
+ * @return None
+ */
+function mainModif()
+{
     $_GET['ligne'] = preg_replace($motif, "", $_GET['ligne']);
     $_GET['ligne'] = (float) $_GET['ligne'];
 
@@ -300,7 +316,7 @@ elseif ($_GET['index'] == "modif") {
 		Vous n\'êtes pas l\'auteur de ces données ou n\'êtes pas identifié(e), vous ne pouvez les modifier.<br />
 		<br />
 		<a href="index.php">Retour</a>';
-        echo $html;
+              echo $html;
     } elseif (time() - $lg[7] < 60 && ($pun_user['group_id'] != '1') && (pun_htmlspecialchars($pun_user['username']) != 'Opitux')) {
         $html = '
 		<h2>Modifier un produit</h2>
@@ -308,7 +324,7 @@ elseif ($_GET['index'] == "modif") {
 		Veuillez attendre quelques minutes avant de modifier à nouveau vos données.<br />
 		<br />
 		<a href="index.php">Retour</a>';
-        echo $html;
+              echo $html;
     } else {
         $html = '
 	<h2>Modifier un produit</h2>
@@ -390,8 +406,14 @@ elseif ($_GET['index'] == "modif") {
     }
 }
 
-// Validation des modifications d'une donnée
-elseif ($_POST['index'] == "valmod") {
+/**
+ * Validation des modifications d'une donnée
+ * Affichage
+ *
+ * @return None
+ */
+function mainValmod()
+{    
     $html = '<h2>Modifier un produit</h2>';
 
     // cas de la virgule
@@ -406,7 +428,7 @@ elseif ($_POST['index'] == "valmod") {
 	`nom` = '" . $_POST['modele'] . "',
 	`poids` = '" . $_POST['poids'] . "',
 	`rq` = '" . $_POST['rq'] . "', `date` = '" . time() .
-            "' WHERE `num` = '" . $_POST['ligne'] . "' LIMIT 1";
+         "' WHERE `num` = '" . $_POST['ligne'] . "' LIMIT 1";
 
     $req2 = "
 	INSERT INTO `poids_backup` ( `num` , `categorie` , `marque` , `nom` , `utilisateur` , `poids` , `rq`, `date` )
@@ -418,9 +440,16 @@ elseif ($_POST['index'] == "valmod") {
 	<br /><br />
 	<a href="index.php">Retour</a>';
 
-    echo $html;
-} else {
-
+         echo $html;
+}
+/**
+ * Function du cas par défaut
+ * Affichage
+ *
+ * @return None
+ */
+function mainDefault()
+{
     $html .='<div class="wrap_center wrap_round wrap_info plugin_wrap" style="width: 80%;">';
     $html .='<p>';
     $html .='Souvent déçu par l\'écart entre le poids annoncé par le fabricant et le poids effectif du matériel ?<br />';
@@ -588,7 +617,46 @@ elseif ($_POST['index'] == "valmod") {
 				</p>';
     }
 
-    Echo $html;  //ecrit la page
+    echo $html;  //ecrit la page
+ 
+}
+
+
+
+
+/* *******************************************
+ *               Main
+ */
+
+//nettoyage des signes dangereux
+/*
+  $motif = '`[][<>{}!\$?\*\|\"\^=/:\`;&#%]`';
+
+  foreach ($_POST as $key => $value) {
+  $_POST[$key] = preg_replace($motif, "", $value);
+  $_POST[$key] = addslashes($value);
+  }
+
+*/
+sanitizeAllInputs();
+
+
+
+if ($_POST['index'] == "liste" || $_GET['index'] == "liste") {
+    //Liste des poids des Produits
+    mainListe();
+} elseif ($_POST['index'] == "ajout") {
+    //Ajout de poids de Produit
+    mainAjout();
+} elseif ($_POST['index'] == "ajcatmrk") {
+    //Ajout de catégorie ou de marque des poids des Produit
+    maintAjCatMrk();
+} elseif ($_GET['index'] == "modif") {
+    mainModif();
+} elseif ($_POST['index'] == "valmod") {
+    mainValmod();
+} else {
+    mainDefault();
 }
 
 mysql_close($db);
