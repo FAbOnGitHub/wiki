@@ -13,9 +13,9 @@
  * @license    https://creativecommons.org/licenses/by-nc-sa/4.0/ CC-by-nc-sa
  * @version    SVN: $Id:$
  * @link       None
- * @see        NetOther, Net_Sample::Net_Sample(
- * @since      File available since Release 1.2.0
- * @deprecated File deprecated in Release 2.0.0
+ * @see        NetOther, Net_Sample::Net_Sample    (header par défaut)
+ * @since      File available since Release 1.2.0  (header par défaut)
+ * @deprecated File deprecated in Release 2.0.0    (header par défaut)
  */
 
 /**
