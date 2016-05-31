@@ -31,6 +31,7 @@ require_once $sPwd . '/commun.inc.php';
 require_once $sPwd . '/mysql.inc.php';
 require_once $sPwd . '/PdoArnaud.class.php';
 
+
 /**
  * PDOlogged : classe
  *
@@ -104,7 +105,8 @@ class PdoLogged extends PdoArnaud {
      *
      * @return none
      */
-    function __destruct() {
+    function __destruct()
+    {
         fclose($this->pdoLogHandler);
     }
 
@@ -115,9 +117,10 @@ class PdoLogged extends PdoArnaud {
      *
      * @return none
      */
-    public function setDebug($bDebug = true) {
+    public function setDebug($bDebug = true)
+    {
         $this->setAttribute(
-                PDO::ATTR_EMULATE_PREPARES, $bDebug == true ? false : true
+            PDO::ATTR_EMULATE_PREPARES, $bDebug == true ? false : true
         );
         $this->setLogLevel($bDebug ? 0 : 1);
     }
@@ -129,7 +132,8 @@ class PdoLogged extends PdoArnaud {
      *
      * @return none
      */
-    function setLogLevel($iLevel = 1) {
+    function setLogLevel($iLevel = 1)
+    {
         $this->_iLogLevel = $iLevel;
     }
 
@@ -355,5 +359,4 @@ class PdoLogged extends PdoArnaud {
     }
 
 }
-
 ?>

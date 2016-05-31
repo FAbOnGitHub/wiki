@@ -8,11 +8,11 @@
 /**
  * Logge $sMsg dans le fichier de log, en préfixant par la date et la sessionId
  *
- * @const string CONSOLE_LOG penser à définir le nom du fichier de log en amont
- *
- * @param string $sMsg
+ * @param string $sMsg Le message à logger
  *
  * @return none
+ *
+ * @const string CONSOLE_LOG penser à définir le nom du fichier de log en amont
  */
 function console_log($sMsg)
 {
@@ -32,6 +32,9 @@ function console_log($sMsg)
 
 /**
  * Vérifie qu'on puisse écrire dans le fichier de config
+ *
+ * @return None
+ *
  * @throws Exception quand il est pas content
  */
 function console_log_check_file()

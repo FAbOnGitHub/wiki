@@ -60,13 +60,13 @@ define('SQL_DEBUG_RESULTS', 2);
  *  la signature de MySQLi si on migre plus tard.
  * Cette fonction retourne des résultats contrairement à sql_query_log
  *
- * @global ressource $dbprotect lien BDD
- *
  * @param string    $sRequete la requête
  * @param boolean   $iDebug   affiche msg
  * @param ressource $oDBLink  lien BDD en option
  *
  * @return array les résultats ou false
+ *
+ * @global ressource $dbprotect lien BDD
  */
 function sql_query($sRequete, $iDebug = SQL_DEBUG_NONE, $oDBLink = null)
 {

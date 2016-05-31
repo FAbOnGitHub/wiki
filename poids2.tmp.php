@@ -139,10 +139,83 @@ function mainListe()
  */
 function mainAjout()
 {
-    global $pun_user;
-
     die("Not tested. Die.");
+    if (pun_htmlspecialchars($pun_user['username']) == "Guest") {
+        echo '
+		<h2>Ajout d\'un produit</h2>
+		Vous ne pouvez inscrire de données dans cette base en tant qu\'invité,
+		 veuillez tout d\'abord vous connecter sur le forum.<br />
+		 Merci de votre compréhension.
+		 <br /><br />
+		<a href="index.php">Retour</a>';
+    } else {
+        $html = '<h2>Ajout d\'un produit</h2>
+		<p>Les informations suivantes ont été ajoutées à la base de données :</p>
+';
 
+        // cas de la virgule
+
+        if (ereg(',', $_POST['poids'])) {
+            $_POST['poids'] = str_replace(",", ".", $_POST['poids']);
+        }
+        $_POST['poids'] = (float) preg_replace("'[^\d]^.'", "", $_POST['poids']);
+
+        //=====Envoi d'un email quand un produit est ajouté
+        $to = 'oli_v_ier@yahoo.fr, fdc.blogrum@xymail.fr';
+        $subject = 'Ajout d\'un produit pesé';
+
+        //=====Création du header de l'e-mail.
+        $headers = 'From: postmaster@randonner-leger.org' . "\r\n" .
+                'Reply-To: postmaster@randonner-leger.org' . "\r\n" .
+                'Content-Type: text/html; charset="utf-8"' . "\r\n" .
+                'X-Mailer: PHP/' . phpversion();
+
+        //=====Ajout du message au format HTML
+        $message .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body>' . "\r\n";
+        $message .= 'Un produit vient d\'être ajouté à la liste des poids :<br />' . "\r\n\n";
+        $message .= 'Catégorie : ' . $_POST['categories'] . '<br />' . "\r\n";
+        $message .= 'Marque : ' . $_POST['marques'] . '<br />' . "\r\n";
+        $message .= 'Modèle : ' . ucfirst($_POST['modele']) . '<br />' . "\r\n";
+        $message .= 'Membre : ' . pun_htmlspecialchars($pun_user['username']) . '<br />' . "\r\n";
+        $message .= 'Poids : ' . $_POST['poids'] . '<br />' . "\r\n";
+        $message .= 'Remarque : ' . $_POST['rq'] . '<br />' . "\r\n";
+        $message .= '<a href="http://' . $_SERVER['HTTP_HOST'] . '/wiki/poids/index.php?index=liste&class=date&categories=Toutes&marques=Toutes">lien pour modification éventuelle</a><br />' . "\r\n";
+        $message .= '</html></body>' . "\r\n";
+
+        //=====Envoi de l'email
+        mail($to, $subject, $message, $headers);
+
+        $sRequete = "
+		INSERT INTO `poids_mat` ( `num` , `categorie` , `marque` , `nom` , `utilisateur` , `poids` , `rq`, `date` )
+		VALUES (
+		NULL , '" . $_POST['categories'] . "', '" . $_POST['marques'] . "', '" . ucfirst($_POST['modele']) . "', '" . pun_htmlspecialchars($pun_user['username']) . "', '" . $_POST['poids'] . "', '" . ucfirst($_POST['rq']) . "', '" . time() . "')";
+
+        $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+        $html.='
+	<table class="inline">
+		<tr>
+			<th class="" >Catégorie</th>
+			<th class="" >Marque</th>
+			<th class="" >Modèle</th>
+			<th class="" >Poids en g.</th>
+			<th class="" >Utilisateur</th>
+			<th class="" >Remarques</th>
+		</tr>
+		<tr>
+			<td class="" >' . $_POST['categories'] . '</td>
+			<td class="" >' . $_POST['marques'] . '</td>
+			<td class="" >' . stripslashes($_POST['modele']) . '</td>
+			<td class="" >' . stripslashes($_POST['poids']) . '</td>
+			<td class="" >' . pun_htmlspecialchars($pun_user['username']) . '</td>
+			<td class="" >' . stripslashes($_POST['rq']) . '</td>
+		</tr>
+	</table>
+	<br />
+	<a href="index.php">Retour</a>';
+
+        echo $html;
+    }
 }
 
 /**
@@ -154,6 +227,69 @@ function mainAjout()
 function mainAjCatMrk()
 {
     die("Not tested. Die.");
+    //Ajout de catégorie ou de marque des poids des Produit
+    $html = '
+	<h2>Ajout d\'une catégorie ou d\'une marque</h2>
+	<p>';
+
+    //nouvelle categorie
+
+    if ($_POST['newcat'] != "") {
+        $_POST['newcat'] = ucfirst($_POST['newcat']);
+
+        $sRequete = "
+	SELECT 'NomCat'
+	FROM `poids_categories`
+	WHERE 1
+	AND `Nomcat` LIKE '" . $_POST['newcat'] . "'";
+
+        $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+        if (mysql_num_rows($result) == 0) {
+            $sRequete = "
+	INSERT INTO `poids_categories` ( `NumCat` , `NomCat` )
+	VALUES (
+	NULL , '" . $_POST['newcat'] . "'
+	)";
+            $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+            $html.='La catégorie ' . $_POST['newcat'] . ' a été ajouée à la liste.<br /><br />';
+        } else {
+            $html.='La categorie ' . $_POST['newcat'] . ' existe déja<br /><br />';
+        }
+    }
+
+    //nouvelle marque
+    elseif ($_POST['newmarq'] != "") {
+        $_POST['newmarq'] = ucfirst($_POST['newmarq']);
+
+        $sRequete = "
+	SELECT 'Nommarq'
+	FROM `poids_marques`
+	WHERE 1
+	AND `Nommarq` LIKE '" . $_POST['newmarq'] . "'";
+
+        $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+        if (mysql_num_rows($result) == 0) {
+            $sRequete = "
+	INSERT INTO `poids_marques` ( `Nummarq` , `Nommarq` )
+	VALUES (
+	NULL , '" . $_POST['newmarq'] . "'
+	)";
+            $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+
+            $html.='La marque ' . $_POST['newmarq'] . ' a été ajouée à la liste.<br />';
+        } else {
+            $html.='La marque ' . $_POST['newmarq'] . ' existe déja';
+        }
+    }
+    $html.='
+	</p>
+	<a href="index.php">Retour</a>';
+
+    echo $html;
 }
 
 /**
@@ -164,10 +300,115 @@ function mainAjCatMrk()
  */
 function mainModif()
 {
-    global $pun_user;
-
     die("Not tested. Die.");
+    $_GET['ligne'] = preg_replace($motif, "", $_GET['ligne']);
+    $_GET['ligne'] = (float) $_GET['ligne'];
 
+
+    $sRequete = "SELECT *
+	FROM `poids_mat`
+	WHERE 1 AND `num` =" . $_GET['ligne'];
+
+    $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+    $lg = mysql_fetch_row($result);
+
+    if (($pun_user['group_id'] != '1') && (pun_htmlspecialchars($pun_user['username']) != $lg[4]) && (pun_htmlspecialchars($pun_user['username']) != 'Opitux')) {
+        $html = '
+		<h2>Modifier un produit</h2>
+		<p>
+		Vous n\'êtes pas l\'auteur de ces données ou n\'êtes pas identifié(e), vous ne pouvez les modifier.<br />
+		<br />
+		<a href="index.php">Retour</a>';
+        echo $html;
+    } elseif (time() - $lg[7] < 60 && ($pun_user['group_id'] != '1') && (pun_htmlspecialchars($pun_user['username']) != 'Opitux')) {
+        $html = '
+		<h2>Modifier un produit</h2>
+		<p>
+		Veuillez attendre quelques minutes avant de modifier à nouveau vos données.<br />
+		<br />
+		<a href="index.php">Retour</a>';
+        echo $html;
+    } else {
+        $html = '
+	<h2>Modifier un produit</h2>
+	<p>
+	<form name="f2" method="POST" action="index.php" onSubmit="return verif_formulaire()">
+	<table class="inline">
+		<tr>
+			<th class="" >Catégorie</th>
+			<th class="" >Marque</th>
+			<th class="" >Modèle</th>
+			<th class="" >Poids en g.</th>
+			<th class="" >Remarques</th>
+		</tr>
+		<tr>
+		<td class="">
+	<select size="1" name="categories">
+	<option>-Choisissez-</option>' . "\n";
+
+        $sRequete = "SELECT *
+	FROM `poids_categories`
+	ORDER BY `NomCat` ASC";
+
+        $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+        while ($row = mysql_fetch_assoc($result)) {
+            if ($lg[1] == $row["NomCat"]) {
+                $selected = "selected";
+            } else {
+                $selected = "";
+            }
+            $html.= "<option " . $selected . ">" . $row["NomCat"] . "</option>" . "\n";
+        }
+
+        mysql_free_result($result);
+
+        $html.='
+	</select>
+		</td>
+		<td class="">
+	<select size="1" name="marques">
+	<option>-Choisissez-</option>' . "\n";
+
+        $sRequete = "SELECT *
+	FROM `poids_marques`
+	ORDER BY `NomMarq` ASC ";
+
+        $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+
+        while ($row = mysql_fetch_assoc($result)) {
+            if ($lg[2] == $row["NomMarq"]) {
+                $selected = "selected";
+            } else {
+                $selected = "";
+            }
+            $html.= "<option " . $selected . ">" . $row["NomMarq"] . "</option>" . "\n";
+        }
+
+        mysql_free_result($result);
+
+        $html.='
+	</select>
+		</td>
+		<td class=""><input type="text" name="modele" size="20" value="' . str_replace(chr(34),
+                        "'", $lg[3]) . '"></td>
+		<td class=""><input type="text" name="poids" size="10" value="' . $lg[5] . '"></td>
+		<td class=""><textarea name="rq" cols="30" rows="4">' . $lg[6] . '</textarea></td>
+		</tr>
+	</table>
+		<input type="hidden" name="utilisateur" value="' . $lg[4] . '">
+	<br />
+	<button type="submit" title="Modifier">Modifier</button>
+	<input name="ligne" type="hidden" value="' . $lg[0] . '">
+	<input name="index" type="hidden" value="valmod">
+	</form>
+	<br />
+	<a href="index.php">Retour</a>
+	';
+
+        echo $html;
+    }
 }
 
 /**
@@ -178,10 +419,34 @@ function mainModif()
  */
 function mainValmod()
 {
-    global $pun_user;
-
     die("Not tested. Die.");
+    $html = '<h2>Modifier un produit</h2>';
 
+    // cas de la virgule
+    if (ereg(',', $_POST['poids'])) {
+        $_POST['poids'] = str_replace(",", ".", $_POST['poids']);
+    }
+    $_POST['poids'] = (float) preg_replace("'[^\d]^.'", "", $_POST['poids']);
+
+    $sRequete = "
+	UPDATE `poids_mat` SET `categorie` = '" . $_POST['categories'] . "',
+	`marque` = '" . $_POST['marques'] . "',
+	`nom` = '" . $_POST['modele'] . "',
+	`poids` = '" . $_POST['poids'] . "',
+	`rq` = '" . $_POST['rq'] . "', `date` = '" . time() .
+            "' WHERE `num` = '" . $_POST['ligne'] . "' LIMIT 1";
+
+    $sRequete2 = "
+	INSERT INTO `poids_backup` ( `num` , `categorie` , `marque` , `nom` , `utilisateur` , `poids` , `rq`, `date` )
+	VALUES (NULL , '" . $_POST['categories'] . "', '" . $_POST['marques'] . "', '" . ucfirst($_POST['modele']) . "', '" . pun_htmlspecialchars($pun_user['username']) . "', '" . $_POST['poids'] . "', '" . ucfirst($_POST['rq']) . "', '" . time() . "')";
+
+    $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
+    $result = mysql_query($sRequete2) or die('Erreur SQL req1!<br />' . mysql_error());
+    $html.='Votre enregistrement été modifié
+	<br /><br />
+	<a href="index.php">Retour</a>';
+
+    echo $html;
 }
 
 /**
@@ -192,8 +457,6 @@ function mainValmod()
  */
 function mainDefault()
 {
-    global $pun_user;
-
     echo "<p>DEFAULT " . __LINE__ . "</p>";
 
     $html .='<div class="wrap_center wrap_round wrap_info plugin_wrap" style="width: 80%;">';

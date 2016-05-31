@@ -2,7 +2,7 @@
 
 /**
  * Inclusion diverses, déclaration des fonctions qui vont bien
- * 
+ *
  *  * PHP version 5
  *
  * @category   RLPoids
@@ -29,7 +29,7 @@
 function sanitizeAllInputs()
 {
     global $oHtmlPurifier;
-    
+
     if (count($_GET)) {
         foreach ($_GET as $sKey => $mValue) {
             $_GET[$sKey] = $oHtmlPurifier->purify($mValue);
@@ -44,18 +44,56 @@ function sanitizeAllInputs()
 
 
 /**
+ * Lance une requête de lecture. Sert juste à na pas s'éloigne de ce qu'il y
+ * avait avant et à masque la partie objet.
+ *
+ * @param string $sRequete la requête SQL
+ * @param array  $aParams  les paramètres
+ *
+ * @return mixed data
+ *
+ * @global object $oBDD le connecteur
+ */
+function sqlRead($sRequete, $aParams)
+{
+    global $oBDD;
+
+
+    $mData = $this->oBDD->execRead($sRequete, $aParams, SQL_DEBUG_ERROR);
+    return $mData;
+}
+
+/**
+ * Écrit dans la BDD
+ *
+ * @param string $sRequete la requête
+ * @param array  $aParams  les paramètres
+ *
+ * @return int nb lignes
+ *
+ * @global object $oBDD
+ */
+function sqlWrite($sRequete, $aParams)
+{
+    global $oBDD;
+
+    $iNbLines = $this->oBDD->execWrite($sRequete, $aParams, SQL_DEBUG_ERROR);
+    return $iNbLines;
+}
+
+/**
  * Gestion de la BDD un peu protégée.
  */
 require 'modSQL/PdoLogged.class.php';
 /*
   // À la recherche des identifiants
-    index.php 
-   -> include '../conf/local.protected.php' 
+    index.php
+   -> include '../conf/local.protected.php'
    -> forum/include/dblayer/common_db.php
    $db = new DBLayer(
        $db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect
    );
- * 
+ *
  */
 $db_type = 'mysqli';
 require '../conf/local.protected.php';
