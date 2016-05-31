@@ -3,12 +3,12 @@
 /**
  * Inclusion diverses, déclaration des fonctions qui vont bien
  *
- *  * PHP version 5
+ * PHP version 5
  *
  * @category   RLPoids
  * @package    RLPoids
  * @author     Fabrice Mendes <fab@antaya.fr>
- * @author     Thierry Vezin <contact@randonner-leger.org>
+ * @author     Thierry Vezin <postmaster@randonner-leger.org>
  * @copyright  2016 randonner-leger.org
  * @license    https://creativecommons.org/licenses/by-nc-sa/4.0/ CC-by-nc-sa
  * @version    SVN: $Id:$
