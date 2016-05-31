@@ -18,7 +18,6 @@
  * @deprecated File deprecated in Release 2.0.0
  */
 
-
 /**
  * Nettoie $_GET et $_POST pour coller au script existant
  *
@@ -42,7 +41,6 @@ function sanitizeAllInputs()
     }
 }
 
-
 /**
  * Lance une requête de lecture. Sert juste à na pas s'éloigne de ce qu'il y
  * avait avant et à masque la partie objet.
@@ -58,8 +56,7 @@ function sqlRead($sRequete, $aParams)
 {
     global $oBDD;
 
-
-    $mData = $this->oBDD->execRead($sRequete, $aParams, SQL_DEBUG_ERROR);
+    $mData = $oBDD->execRead($sRequete, $aParams, SQL_DEBUG_ERROR);
     return $mData;
 }
 
@@ -77,7 +74,7 @@ function sqlWrite($sRequete, $aParams)
 {
     global $oBDD;
 
-    $iNbLines = $this->oBDD->execWrite($sRequete, $aParams, SQL_DEBUG_ERROR);
+    $iNbLines = $oBDD->execWrite($sRequete, $aParams, SQL_DEBUG_ERROR);
     return $iNbLines;
 }
 
@@ -87,17 +84,17 @@ function sqlWrite($sRequete, $aParams)
 require 'modSQL/PdoLogged.class.php';
 /*
   // À la recherche des identifiants
-    index.php
-   -> include '../conf/local.protected.php'
-   -> forum/include/dblayer/common_db.php
-   $db = new DBLayer(
-       $db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect
-   );
+  index.php
+  -> include '../conf/local.protected.php'
+  -> forum/include/dblayer/common_db.php
+  $db = new DBLayer(
+  $db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect
+  );
  *
  */
+
 $db_type = 'mysqli';
 require '../conf/local.protected.php';
-
 $sLogFile = 'poids.log';
 $sDSN = 'mysql:dbname=' . $db_name . ';host=' . $db_host;
 $oBDD = new PdoLogged($sDSN, $db_username, $db_password, $sLogFile);
@@ -105,11 +102,11 @@ if (!$oBDD) {
     throw new Exception("DB handler error");
 }
 
-
 /**
  * Gestion anti-XSS
  */
-require_once 'htmlpurifier/HTMLPurifier.auto.php';
+
+require_once 'htmlpurifier/library/HTMLPurifier.auto.php';
 $config = HTMLPurifier_Config::createDefault();
 $oHtmlPurifier = new HTMLPurifier($config);
 //$clean_html = $oHtmlPurifier->purify($dirty_html);

@@ -119,13 +119,12 @@ function mainListe()
 			</td>
 		</tr>';
         }
-
         $html.='</tbody></table>
 		</div>
 		<br />
 		<a href="index.php">Retour</a>';
     } else {
-        echo "<div class='bg-warning'>pas de résultat</div>";
+        $html .= "<div class='bg-warning'>pas de résultat</div>";
     }
 
     echo $html;
@@ -142,7 +141,6 @@ function mainAjout()
     global $pun_user;
 
     die("Not tested. Die.");
-
 }
 
 /**
@@ -167,7 +165,6 @@ function mainModif()
     global $pun_user;
 
     die("Not tested. Die.");
-
 }
 
 /**
@@ -181,7 +178,6 @@ function mainValmod()
     global $pun_user;
 
     die("Not tested. Die.");
-
 }
 
 /**
@@ -193,8 +189,6 @@ function mainValmod()
 function mainDefault()
 {
     global $pun_user;
-
-    echo "<p>DEFAULT " . __LINE__ . "</p>";
 
     $html .='<div class="wrap_center wrap_round wrap_info plugin_wrap" style="width: 80%;">';
     $html .='<p>';
@@ -234,7 +228,7 @@ function mainDefault()
      */
     $aRows = sqlRead($sRequete, null);
     if (count($aRows)) {
-        echo '
+        $html .= '
 	<select size="1" name="categories">
 	<option>Toutes</option>' . "\n";
 
@@ -254,20 +248,17 @@ function mainDefault()
 		FROM `poids_marques`
 		ORDER BY `NomMarq` ASC ";
     $aRows = sqlRead($sRequete, null);
-
     if (count($aRows)) {
-        echo "<div>pas de données</div";
-    } else {
         $html .= '
 		<select size="1" name="marques">
 		<option>Toutes</option>' . "\n";
-
         foreach ($aRows as $row) {
             $html.='<option>' . $row['NomMarq'] . '</option>' . "\n";
         }
-
         $html .= '
     	</select>';
+    } else {
+        $html .= "<div>pas de données</p>";
     }
 
 
@@ -324,14 +315,14 @@ function mainDefault()
         $aRows = sqlRead($sRequete, null);
         if (count($aRows)) {
             $html .= '
-			<select size="1" name="categories">
-			<option>-Choisissez-</option>' . "\n";
+		<select size="1" name="categories">
+		<option>-Choisissez-</option>' . "\n";
             foreach ($aRows as $row) {
                 $html.='<option>' . $row["NomCat"] . '</option>' . "\n";
             }
             $html.='</select>';
         } else {
-            echo "<div>pas de données</p>";
+            $html .= "<div>pas de données</p>";
         }
 
 
@@ -356,11 +347,10 @@ function mainDefault()
             $html .= '
 			<select size="1" name="marques">
 			<option>-Choisissez-</option>' . "\n";
-
             foreach ($aRows as $row) {
-                $html.='<option>' . $row['NomMarq'] . '</option>' . "\n";
+                $html .= '<option>' . $row['NomMarq'] . '</option>' . "\n";
             }
-            $html.='
+            $html .= '
 				</select>';
         }
         /*
@@ -426,6 +416,7 @@ function mainDefault()
   }
 
  */
+echo "Main! avant appel sanitize\n";
 sanitizeAllInputs();
 
 
@@ -446,6 +437,4 @@ if ($_POST['index'] == "liste" || $_GET['index'] == "liste") {
 } else {
     mainDefault();
 }
-
-mysql_close($db);
 ?>
