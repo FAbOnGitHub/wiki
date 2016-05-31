@@ -43,18 +43,19 @@ function mainListe()
 	</thead>
 	<tbody>';
 
+    // On peut factoriser bien plus!
     $aParams = null;
     if ($_POST['categories'] == "Toutes" && $_POST['marques'] != "Toutes") {
         $sRequete = "
 		SELECT *
 		FROM `poids_mat`
-		WHERE `marque` LIKE ':marques'";
+		WHERE `marque` LIKE :marques";
         $aParams[':marques'] = $_POST['marques'];
     } else if ($_POST['categories'] != "Toutes" && $_POST['marques'] == "Toutes") {
         $sRequete = "
 		SELECT *
 		FROM `poids_mat`
-		WHERE `categorie` LIKE ':categories'";
+		WHERE `categorie` LIKE :categories";
         $aParams[':categories'] = $_POST['categories'];
     } else if ($_POST['categories'] == "Toutes" && $_POST['marques'] == "Toutes") {
         $sRequete = "
@@ -65,13 +66,13 @@ function mainListe()
 		SELECT *
 		FROM `poids_mat`
 		WHERE
-       		`categorie` LIKE ':categories'
-		AND `marque` LIKE ':marques'";
+       		`categorie` LIKE :categories
+		AND `marque` LIKE :marques";
         $aParams[':categories'] = $_POST['categories'];
         $aParams[':marques'] = $_POST['marques'];
     }
 
-    if ($_GET['utilisateur'] != "" & $_GET['categories'] == "Toutes" & $_GET['marques'] == "Toutes") {
+    if ($_GET['utilisateur'] != "" && $_GET['categories'] == "Toutes" && $_GET['marques'] == "Toutes") {
         $sRequete = "
 		SELECT *
 		FROM `poids_mat`
@@ -82,12 +83,12 @@ function mainListe()
 
     if (isset($_POST['class'])) {
         if ($_POST['class'] == 'date') {
-            $sRequete.="ORDER BY `" . $_POST['class'] . "` DESC";
+            $sRequete .= " ORDER BY `" . $_POST['class'] . "` DESC";
         } else {
-            $sRequete.="ORDER BY `" . $_POST['class'] . "` ASC";
+            $sRequete .= " ORDER BY `" . $_POST['class'] . "` ASC";
         }
     } else {
-        $sRequete.="ORDER BY `date` DESC";
+        $sRequete .= " ORDER BY `date` DESC";
     }
 
     //    $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
@@ -119,14 +120,14 @@ function mainListe()
 			</td>
 		</tr>';
         }
-        $html.='</tbody></table>
+    } else {
+        $html .= "<tr><td><div class='bg-warning'>pas de résultat</div></td></tr>";
+    }
+
+    $html.='</tbody></table>
 		</div>
 		<br />
 		<a href="index.php">Retour</a>';
-    } else {
-        $html .= "<div class='bg-warning'>pas de résultat</div>";
-    }
-
     echo $html;
 }
 
@@ -258,7 +259,7 @@ function mainDefault()
         $html .= '
     	</select>';
     } else {
-        $html .= "<div>pas de données</p>";
+        $html .= "<div>pas de données</div>";
     }
 
 
@@ -318,9 +319,9 @@ function mainDefault()
 		<select size="1" name="categories">
 		<option>-Choisissez-</option>' . "\n";
             foreach ($aRows as $row) {
-                $html.='<option>' . $row["NomCat"] . '</option>' . "\n";
+                $html .= '<option>' . $row["NomCat"] . '</option>' . "\n";
             }
-            $html.='</select>';
+            $html .= '</select>';
         } else {
             $html .= "<div>pas de données</p>";
         }
@@ -334,24 +335,21 @@ function mainDefault()
           mysql_free_result($result);
          */
 
-        $html.='
-				</td>
-				<td class="">';
+        $html.='</td>
+	<td class="">';
 
-        $sRequete = "SELECT *
-			FROM `poids_marques`
-			ORDER BY `NomMarq` ASC ";
+        $sRequete = "
+            SELECT *
+            FROM `poids_marques`
+            ORDER BY `NomMarq` ASC ";
         $aRows = sqlRead($sRequete, null);
         if (count($aRows)) {
-
-            $html .= '
-			<select size="1" name="marques">
+            $html .= '<select size="1" name="marques">
 			<option>-Choisissez-</option>' . "\n";
             foreach ($aRows as $row) {
                 $html .= '<option>' . $row['NomMarq'] . '</option>' . "\n";
             }
-            $html .= '
-				</select>';
+            $html .= '</select>';
         }
         /*
           $result = mysql_query($sRequete) or die('Erreur SQL req1!<br />' . mysql_error());
@@ -416,7 +414,7 @@ function mainDefault()
   }
 
  */
-echo "Main! avant appel sanitize\n";
+
 sanitizeAllInputs();
 
 

@@ -52,11 +52,11 @@ function sanitizeAllInputs()
  *
  * @global object $oBDD le connecteur
  */
-function sqlRead($sRequete, $aParams)
+function sqlRead($sRequete, $aParams=null)
 {
     global $oBDD;
 
-    $mData = $oBDD->execRead($sRequete, $aParams, SQL_DEBUG_ERROR);
+    $mData = $oBDD->execRead($sRequete, $aParams, SQL_DEBUG_RESULTS);
     return $mData;
 }
 
@@ -70,7 +70,7 @@ function sqlRead($sRequete, $aParams)
  *
  * @global object $oBDD
  */
-function sqlWrite($sRequete, $aParams)
+function sqlWrite($sRequete, $aParams=null)
 {
     global $oBDD;
 
@@ -97,7 +97,8 @@ $db_type = 'mysqli';
 require '../conf/local.protected.php';
 $sLogFile = 'poids.log';
 $sDSN = 'mysql:dbname=' . $db_name . ';host=' . $db_host;
-$oBDD = new PdoLogged($sDSN, $db_username, $db_password, $sLogFile);
+$sCharset = 'latin1';
+$oBDD = new PdoLogged($sDSN, $db_username, $db_password, $sLogFile, null, $sCharset);
 if (!$oBDD) {
     throw new Exception("DB handler error");
 }
